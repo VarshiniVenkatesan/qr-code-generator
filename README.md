@@ -1,19 +1,27 @@
-# 🎨 QR Code Generator - Python & Flask
+# 🎨 QR Code Generator
 
-A simple and stylish **QR Code Generator** built using **Python, Flask, HTML, CSS, and JavaScript**. Users can enter text or a URL to generate a QR code instantly and download it as an image.  
+A simple and elegant **QR Code Generator** built using **Python (Flask)** and **HTML/CSS**. This tool allows users to generate QR codes from text or URLs and download them as images.
 
 ---
 
 ## 🚀 Features
-✅ Generate QR Codes from **any text or URL**  
-✅ **Download QR Code** as an image  
-✅ **Beautiful & Responsive UI** with modern colors  
-✅ Built with **Python (Flask) for backend** and **HTML/CSS** for frontend  
-✅ **Fast & Lightweight** – No external database required  
+
+✅ Generate QR codes instantly  
+✅ Download the QR code as an image  
+✅ Clean and responsive user interface  
+✅ Lightweight and fast  
 
 ---
 
-## 🎯 How to Run Locally
+## 🛠 Tech Stack
+
+- **Backend:** Python (Flask)  
+- **Frontend:** HTML, CSS  
+- **QR Code Generation:** qrcode (PIL-based)  
+
+---
+
+## 🎯 Installation & Usage
 
 ### 1️⃣ Clone the Repository
 ```sh

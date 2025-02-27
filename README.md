@@ -23,7 +23,13 @@ A simple and elegant **QR Code Generator** built using **Python (Flask)** and **
 
 ## 🎯 Installation & Usage
 
-### 1️⃣ Clone the Repository
 ```sh
+# 1️⃣ Clone the Repository
 git clone https://github.com/yourusername/qr-code-generator.git
 cd qr-code-generator
+
+# 2️⃣ Install Dependencies
+pip install -r requirements.txt
+
+# 3️⃣ Run the Flask App
+python app.py

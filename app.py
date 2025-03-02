@@ -3,6 +3,7 @@ import qrcode
 import os
 import tempfile
 from datetime import datetime
+import platform
 
 app = Flask(__name__)
 

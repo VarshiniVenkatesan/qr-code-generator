@@ -1,13 +1,13 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, jsonify
 import qrcode
-import io
 import os
+import tempfile
 from datetime import datetime
 
 app = Flask(__name__)
 
-SAVE_FOLDER = "static/qrcodes"  # Folder to save QR codes
-os.makedirs(SAVE_FOLDER, exist_ok=True)  # Create folder if not exists
+# Use temporary directory (since Render does not support persistent storage)
+DOWNLOADS_FOLDER = tempfile.gettempdir()
 
 @app.route('/')
 def home():
@@ -15,20 +15,31 @@ def home():
 
 @app.route('/generate_qr', methods=['POST'])
 def generate_qr():
-    data = request.form['data']
+    data = request.form.get('data', '').strip()
     
     if not data:
-        return "No data provided", 400
+        return jsonify({"error": "No data provided"}), 400
+    
+    # Generate filename from domain name or use a timestamp
+    domain = data.split('//')[-1].split('/')[0].replace('.', '_')
+    filename = f"{domain}.png" if domain else f"qr_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+
+    filepath = os.path.join(DOWNLOADS_FOLDER, filename)
     
     # Generate QR code
     qr = qrcode.make(data)
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")  # Unique filename
-    filename = f"qr_{timestamp}.png"
-    filepath = os.path.join(SAVE_FOLDER, filename)
-    
-    qr.save(filepath)  # Save QR code in static folder
+    qr.save(filepath)  # Save in temp folder
 
-    return {"filepath": filepath, "filename": filename}
+    return jsonify({"filename": filename, "download_url": f"/download_qr/{filename}"})
+
+@app.route('/download_qr/<filename>')
+def download_qr(filename):
+    file_path = os.path.join(DOWNLOADS_FOLDER, filename)
+    
+    if not os.path.exists(file_path):
+        return jsonify({"error": "File not found"}), 404
+
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080)  # Required for Render

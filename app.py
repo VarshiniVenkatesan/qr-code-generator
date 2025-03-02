@@ -1,13 +1,18 @@
 from flask import Flask, render_template, request, send_file
 import qrcode
-import io
 import os
 from datetime import datetime
+import platform
 
 app = Flask(__name__)
 
-SAVE_FOLDER = "static/qrcodes"  # Folder to save QR codes
-os.makedirs(SAVE_FOLDER, exist_ok=True)  # Create folder if not exists
+# Detect OS and set Downloads folder
+if platform.system() == "Windows":
+    DOWNLOADS_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
+else:
+    DOWNLOADS_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
+
+os.makedirs(DOWNLOADS_FOLDER, exist_ok=True)  # Ensure folder exists
 
 @app.route('/')
 def home():
@@ -18,17 +23,24 @@ def generate_qr():
     data = request.form['data']
     
     if not data:
-        return "No data provided", 400
+        return {"error": "No data provided"}, 400
+    
+    # Generate filename from domain name or generic
+    domain = data.split('//')[-1].split('/')[0].replace('.', '_')
+    filename = f"{domain}.png" if domain else f"qr_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+
+    filepath = os.path.join(DOWNLOADS_FOLDER, filename)
     
     # Generate QR code
     qr = qrcode.make(data)
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")  # Unique filename
-    filename = f"qr_{timestamp}.png"
-    filepath = os.path.join(SAVE_FOLDER, filename)
-    
-    qr.save(filepath)  # Save QR code in static folder
+    qr.save(filepath)  # Save QR code in Downloads folder
 
-    return {"filepath": filepath, "filename": filename}
+    return {"filename": filename}
+
+@app.route('/download_qr/<filename>')
+def download_qr(filename):
+    file_path = os.path.join(DOWNLOADS_FOLDER, filename)
+    return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

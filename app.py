@@ -1,10 +1,12 @@
 from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS  # Import Flask-CORS
 import qrcode
 import os
 import tempfile
 from datetime import datetime
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Use a temporary directory since Render does not support persistent storage
 DOWNLOADS_FOLDER = tempfile.gettempdir()
@@ -30,7 +32,7 @@ def generate_qr():
     qr = qrcode.make(data)
     qr.save(filepath)  # Save in temp folder
 
-    return jsonify({"filename": filename, "download_url": f"/download_qr/{filename}"})
+    return jsonify({"filename": filename, "download_url": f"/download_qr/{filename}"}), 200
 
 @app.route('/download_qr/<filename>')
 def download_qr(filename):

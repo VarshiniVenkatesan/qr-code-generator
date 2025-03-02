@@ -5,15 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>QR Code Generator</h1>
-        <input type="text" id="qr-data" placeholder="Enter text or URL">
-        <button onclick="generateQR()">Generate QR Code</button>
+        <div class="input-container">
+            <input type="text" id="qr-data" placeholder="Enter text or URL">
+            <i class="fas fa-arrow-right" id="generate-icon" onclick="generateQR()"></i>
+        </div>
         <div id="qr-result">
             <img id="qr-image" style="display:none;">
-            <a id="save-btn" style="display:none;" download>Download Image</a>
+            <a id="save-btn" style="display:none;">
+                <i class="fas fa-download"></i> Download
+            </a>
         </div>
     </div>
 
@@ -32,16 +37,20 @@
             })
             .then(response => response.json())
             .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
                 let img = document.getElementById("qr-image");
                 let saveBtn = document.getElementById("save-btn");
 
-                img.src = data.filepath;
+                img.src = `/download_qr/${data.filename}`;
                 img.style.display = "block";
 
                 // Set download link
-                saveBtn.href = data.filepath;
+                saveBtn.href = `/download_qr/${data.filename}`;
                 saveBtn.download = data.filename;
-                saveBtn.textContent = "Download Image";
                 saveBtn.style.display = "inline-block";
             })
             .catch(error => console.error("Error:", error));

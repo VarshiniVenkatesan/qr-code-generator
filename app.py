@@ -1,18 +1,17 @@
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, request, send_file, jsonify
 import qrcode
 import os
 import tempfile
 from datetime import datetime
-import platform
 
 app = Flask(__name__)
 
-# Use temporary directory (since Render does not support persistent storage)
+# Use a temporary directory since Render does not support persistent storage
 DOWNLOADS_FOLDER = tempfile.gettempdir()
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+@app.route('/', methods=['GET'])
+def health_check():
+    return jsonify({"message": "QR Code API is running"}), 200
 
 @app.route('/generate_qr', methods=['POST'])
 def generate_qr():
